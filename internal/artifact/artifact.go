@@ -50,7 +50,10 @@ func NewWithPaths(artifactName string, paths []string) (*Artifact, error) {
 					if err != nil {
 						return fmt.Errorf("error reading file: %s, error: %w", subPath, err)
 					}
-					artifact.AddFile(subPath, content)
+					err = artifact.AddFile(subPath, content)
+					if err != nil {
+						return fmt.Errorf("error adding file: %s, error: %w", subPath, err)
+					}
 				}
 				return nil
 			})
@@ -62,22 +65,36 @@ func NewWithPaths(artifactName string, paths []string) (*Artifact, error) {
 			if err != nil {
 				return nil, fmt.Errorf("error reading file: %s, error: %w", path, err)
 			}
-			artifact.AddFile(path, content)
+			err = artifact.AddFile(path, content)
+			if err != nil {
+				return nil, fmt.Errorf("error adding file: %s, error: %w", path, err)
+			}
 		}
 	}
 
 	return artifact, nil
 }
 
+// AddFile adds a file to the artifact
 func (a *Artifact) AddFile(filePath string, content []byte) error {
+	// Ensure the parent directory structure exists
+	dirPath := filepath.Dir(filePath)
+	if err := a.Vfs.MkdirAll(dirPath, 0755); err != nil {
+		return fmt.Errorf("error creating directories in the virtual file system: %w", err)
+	}
+
 	file, err := a.Vfs.Create(filePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("error creating file in the virtual file system: %w", err)
 	}
 	defer file.Close()
 
 	_, err = file.Write(content)
-	return err
+	if err != nil {
+		return fmt.Errorf("error writing content to the virtual file: %w", err)
+	}
+
+	return nil
 }
 
 func (a *Artifact) CreateTarGz() error {
@@ -268,10 +285,32 @@ func (a *Artifact) LoadFromReader(reader io.Reader) error {
 	return nil
 }
 
-func (a *Artifact) Size() (int64, error) {
-	var totalSize int64 = 0
+func (a *Artifact) ListFiles() ([]string, error) {
+	var fileList []string
 
-	err := afero.Walk(a.Vfs, "/", func(path string, info os.FileInfo, err error) error {
+	err := afero.Walk(a.Vfs, ".", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			fileList = append(fileList, path)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return fileList, nil
+}
+
+func (a *Artifact) Size() (int64, error) {
+	var totalSize int64
+
+	err := afero.Walk(a.Vfs, ".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

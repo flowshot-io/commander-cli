@@ -37,7 +37,12 @@ func NewUploadCommand(d *Driver) *cobra.Command {
 				}
 			}
 
-			fmt.Printf("Artifact '%s' loaded successfully\n", artifactName)
+			list, err := a.ListFiles()
+			if err != nil {
+				return fmt.Errorf("error listing files: %w", err)
+			}
+
+			fmt.Printf("Artifact '%s' created successfully with files: %v\n", artifactName, list)
 
 			client, err := d.clientFactory.ArtifactClient(cmd)
 			if err != nil {
@@ -55,7 +60,7 @@ func NewUploadCommand(d *Driver) *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&artifactName, "artifact", "a", "", "Artifact to upload (required)")
+	c.Flags().StringVarP(&artifactName, "name", "n", "", "Name for artifact to upload (required)")
 	c.MarkFlagRequired("artifact")
 	c.Flags().StringVarP(&tarGzFile, "file", "f", "", "Path to the tar.gz file")
 	c.Flags().StringSliceVarP(&paths, "paths", "p", []string{}, "List of paths or directories to create an artifact from")
