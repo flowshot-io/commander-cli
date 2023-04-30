@@ -2,7 +2,6 @@ package artifact
 
 import (
 	"archive/tar"
-	"bytes"
 	"compress/gzip"
 	"fmt"
 	"io"
@@ -14,9 +13,8 @@ import (
 )
 
 type Artifact struct {
-	Name      string
-	Vfs       afero.Fs
-	readIndex int
+	Name string
+	Vfs  afero.Fs
 }
 
 func New(artifactName string) *Artifact {
@@ -25,9 +23,8 @@ func New(artifactName string) *Artifact {
 	}
 
 	return &Artifact{
-		Name:      artifactName,
-		Vfs:       afero.NewMemMapFs(),
-		readIndex: 0,
+		Name: artifactName,
+		Vfs:  afero.NewMemMapFs(),
 	}
 }
 
@@ -97,47 +94,6 @@ func (a *Artifact) AddFile(filePath string, content []byte) error {
 	return nil
 }
 
-func (a *Artifact) CreateTarGz() error {
-	tarGzFile, err := os.Create(a.Name)
-	if err != nil {
-		return err
-	}
-	defer tarGzFile.Close()
-
-	gzWriter := gzip.NewWriter(tarGzFile)
-	defer gzWriter.Close()
-
-	tarWriter := tar.NewWriter(gzWriter)
-	defer tarWriter.Close()
-
-	err = afero.Walk(a.Vfs, "/", func(path string, info os.FileInfo, err error) error {
-		if err != nil || info.IsDir() {
-			return err
-		}
-
-		header, err := tar.FileInfoHeader(info, info.Name())
-		if err != nil {
-			return err
-		}
-		header.Name = filepath.ToSlash(path)
-
-		err = tarWriter.WriteHeader(header)
-		if err != nil {
-			return err
-		}
-
-		file, err := a.Vfs.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		_, err = io.Copy(tarWriter, file)
-		return err
-	})
-	return err
-}
-
 func (a *Artifact) LoadFromTarGzFile(tarGzFilePath string) error {
 	tarGzFile, err := os.Open(tarGzFilePath)
 	if err != nil {
@@ -153,15 +109,16 @@ func (a *Artifact) LoadFromTarGzFile(tarGzFilePath string) error {
 	return nil
 }
 
-func (a *Artifact) SaveToDirectory(outputDir string) error {
-	return afero.Walk(a.Vfs, "/", func(path string, info os.FileInfo, err error) error {
+func (a *Artifact) ExtractTo(outputDir string) error {
+	return afero.Walk(a.Vfs, ".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
 		outPath := filepath.Join(outputDir, path)
+
 		if info.IsDir() {
-			return os.MkdirAll(outPath, info.Mode())
+			return os.MkdirAll(outPath, os.ModePerm)
 		}
 
 		inFile, err := a.Vfs.Open(path)
@@ -172,39 +129,15 @@ func (a *Artifact) SaveToDirectory(outputDir string) error {
 
 		outFile, err := os.Create(outPath)
 		if err != nil {
+			fmt.Println("error creating file: ", err)
 			return err
 		}
 		defer outFile.Close()
 
 		_, err = io.Copy(outFile, inFile)
+
 		return err
 	})
-}
-
-// Implementing io.Writer interface
-func (a *Artifact) Write(p []byte) (n int, err error) {
-	err = a.LoadFromReader(bytes.NewReader(p))
-	if err != nil {
-		return 0, err
-	}
-	return len(p), nil
-}
-
-// Implementing io.Reader interface
-func (a *Artifact) Read(p []byte) (n int, err error) {
-	var buf bytes.Buffer
-	err = a.SaveToWriter(&buf)
-	if err != nil {
-		return 0, err
-	}
-	data := buf.Bytes()
-	bytesRead := copy(p, data[a.readIndex:])
-	a.readIndex += bytesRead
-
-	if bytesRead == 0 {
-		return 0, io.EOF
-	}
-	return bytesRead, nil
 }
 
 func (a *Artifact) SaveToWriter(writer io.Writer) error {
@@ -214,7 +147,7 @@ func (a *Artifact) SaveToWriter(writer io.Writer) error {
 	tarWriter := tar.NewWriter(gzWriter)
 	defer tarWriter.Close()
 
-	err := afero.Walk(a.Vfs, "/", func(path string, info os.FileInfo, err error) error {
+	err := afero.Walk(a.Vfs, ".", func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return err
 		}
@@ -239,6 +172,7 @@ func (a *Artifact) SaveToWriter(writer io.Writer) error {
 		_, err = io.Copy(tarWriter, file)
 		return err
 	})
+
 	return err
 }
 
@@ -305,26 +239,4 @@ func (a *Artifact) ListFiles() ([]string, error) {
 	}
 
 	return fileList, nil
-}
-
-func (a *Artifact) Size() (int64, error) {
-	var totalSize int64
-
-	err := afero.Walk(a.Vfs, ".", func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if !info.IsDir() {
-			totalSize += info.Size()
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return 0, err
-	}
-
-	return totalSize, nil
 }

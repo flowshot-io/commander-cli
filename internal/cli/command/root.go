@@ -21,9 +21,10 @@ func NewDriver() *Driver {
 
 func NewCommand(d *Driver) *cobra.Command {
 	c := &cobra.Command{
-		Use:   "cli",
-		Short: "A command-line tool for Commander.",
-		Long:  `A command-line tool for performing tasks on a Commander cluster.`,
+		Use:          "cli",
+		Short:        "A command-line tool for Commander.",
+		Long:         `A command-line tool for performing tasks on a Commander cluster.`,
+		SilenceUsage: true,
 	}
 	c.SetVersionTemplate("{{.Version}}\n")
 

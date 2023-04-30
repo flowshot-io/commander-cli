@@ -22,10 +22,12 @@ func NewRootCommand(d *Driver) *cobra.Command {
 		Long:  `Artifact commands`,
 	}
 
-	uploadCMD := NewUploadCommand(d)
+	createCMD := NewCreateCommand(d)
+	getCMD := NewGetCommand(d)
 
 	c.AddCommand(
-		uploadCMD,
+		createCMD,
+		getCMD,
 	)
 
 	return c

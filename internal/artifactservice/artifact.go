@@ -1,8 +1,10 @@
 package artifactservice
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/flowshot-io/commander-cli/internal/artifact"
 	"github.com/flowshot-io/x/pkg/storager"
@@ -39,12 +41,13 @@ func New(opts Options) (ArtifactServiceClient, error) {
 }
 
 func (c *Client) UploadArtifact(ctx context.Context, artifact *artifact.Artifact) error {
-	size, err := artifact.Size()
+	var buf bytes.Buffer
+	err := artifact.SaveToWriter(&buf)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.store.Write(artifact.Name, artifact, size)
+	_, err = c.store.WriteWithContext(ctx, artifact.Name, bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	if err != nil {
 		return err
 	}
@@ -53,13 +56,22 @@ func (c *Client) UploadArtifact(ctx context.Context, artifact *artifact.Artifact
 }
 
 func (c *Client) GetArtifact(ctx context.Context, artifactName string) (*artifact.Artifact, error) {
-	_, err := c.store.StatWithContext(ctx, artifactName)
+	artifact := artifact.New(artifactName)
+
+	_, err := c.store.StatWithContext(ctx, artifact.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	artifact := artifact.New(artifactName)
-	_, err = c.store.ReadWithContext(ctx, artifact.Name, artifact)
+	var buf bytes.Buffer
+	writer := io.Writer(&buf)
+
+	_, err = c.store.ReadWithContext(ctx, artifact.Name, writer)
+	if err != nil {
+		return nil, err
+	}
+
+	err = artifact.LoadFromReader(&buf)
 	if err != nil {
 		return nil, err
 	}

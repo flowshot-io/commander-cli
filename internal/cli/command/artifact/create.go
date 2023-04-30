@@ -7,15 +7,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewUploadCommand(d *Driver) *cobra.Command {
+func NewCreateCommand(d *Driver) *cobra.Command {
 	var artifactName string
 	var tarGzFile string
 	var paths []string
 
 	c := &cobra.Command{
-		Use:   "upload",
-		Short: "Upload an artifact to storage",
-		Long:  `Upload an artifact to storage.`,
+		Use:   "create",
+		Short: "create an artifact",
+		Long:  `create an artifact and upload it to storage.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if tarGzFile != "" && len(paths) > 0 {
 				return fmt.Errorf("cannot specify both tar.gz file and paths")
@@ -42,7 +42,7 @@ func NewUploadCommand(d *Driver) *cobra.Command {
 				return fmt.Errorf("error listing files: %w", err)
 			}
 
-			fmt.Printf("Artifact '%s' created successfully with files: %v\n", artifactName, list)
+			fmt.Printf("Artifact '%s' created successfully with files: %v\n", a.Name, list)
 
 			client, err := d.clientFactory.ArtifactClient(cmd)
 			if err != nil {
@@ -54,14 +54,14 @@ func NewUploadCommand(d *Driver) *cobra.Command {
 				return fmt.Errorf("error uploading artifact: %w", err)
 			}
 
-			fmt.Printf("Artifact '%s' uploaded successfully\n", artifactName)
+			fmt.Printf("Artifact '%s' uploaded successfully\n", a.Name)
 
 			return nil
 		},
 	}
 
 	c.Flags().StringVarP(&artifactName, "name", "n", "", "Name for artifact to upload (required)")
-	c.MarkFlagRequired("artifact")
+	c.MarkFlagRequired("name")
 	c.Flags().StringVarP(&tarGzFile, "file", "f", "", "Path to the tar.gz file")
 	c.Flags().StringSliceVarP(&paths, "paths", "p", []string{}, "List of paths or directories to create an artifact from")
 

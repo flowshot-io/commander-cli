@@ -37,6 +37,7 @@ func (f *clientFactory) CommanderClient(c *cobra.Command) (commanderservice.Comm
 func (f *clientFactory) ArtifactClient(c *cobra.Command) (artifactservice.ArtifactServiceClient, error) {
 	opts := artifactservice.Options{
 		ConnectionString: "s3://commander/workflows/?credential=hmac:5kpWVH8bjA3ak8Kv:ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099&location=&force_path_style=true",
+		// ConnectionString: "minio://commander/workflows?credential=hmac:5kpWVH8bjA3ak8Kv:ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099",
 	}
 
 	artifact, err := artifactservice.New(opts)
