@@ -1,7 +1,8 @@
 package command
 
 import (
-	"github.com/flowshot-io/commander-cli/internal/cli/command/blenderfarm"
+	artifactcommand "github.com/flowshot-io/commander-cli/internal/cli/command/artifact"
+	blenderfarmcommand "github.com/flowshot-io/commander-cli/internal/cli/command/blenderfarm"
 	"github.com/flowshot-io/commander-cli/internal/cli/factory"
 	"github.com/spf13/cobra"
 )
@@ -26,12 +27,15 @@ func NewCommand(d *Driver) *cobra.Command {
 	}
 	c.SetVersionTemplate("{{.Version}}\n")
 
-	rdrv := blenderfarm.NewDriver(d.clientFactory)
+	rdrv := blenderfarmcommand.NewDriver(d.clientFactory)
+	adrv := artifactcommand.NewDriver(d.clientFactory)
 
-	blenderfarmCMD := blenderfarm.NewRootCommand(rdrv)
+	blenderfarmCMD := blenderfarmcommand.NewRootCommand(rdrv)
+	artifactCMD := artifactcommand.NewRootCommand(adrv)
 
 	c.AddCommand(
 		blenderfarmCMD,
+		artifactCMD,
 	)
 
 	return c

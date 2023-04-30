@@ -1,4 +1,4 @@
-package blenderfarmcommand
+package artifactcommand
 
 import (
 	"github.com/flowshot-io/commander-cli/internal/cli/factory"
@@ -17,15 +17,15 @@ func NewDriver(clientFactory factory.ClientFactory) *Driver {
 
 func NewRootCommand(d *Driver) *cobra.Command {
 	c := &cobra.Command{
-		Use:   "blenderfarm",
-		Short: "Blenderfarm workflow commands",
-		Long:  `Blenderfarm workflow commands`,
+		Use:   "artifact",
+		Short: "Artifact commands",
+		Long:  `Artifact commands`,
 	}
 
-	startCMD := NewStartCommand(d)
+	uploadCMD := NewUploadCommand(d)
 
 	c.AddCommand(
-		startCMD,
+		uploadCMD,
 	)
 
 	return c

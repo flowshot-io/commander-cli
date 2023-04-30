@@ -3,6 +3,7 @@ package factory
 import (
 	"fmt"
 
+	"github.com/flowshot-io/commander-cli/internal/artifactservice"
 	"github.com/flowshot-io/commander-client-go/client"
 	"github.com/flowshot-io/commander-client-go/commanderservice/v1"
 	"github.com/spf13/cobra"
@@ -10,6 +11,7 @@ import (
 
 type ClientFactory interface {
 	CommanderClient(c *cobra.Command) (commanderservice.CommanderServiceClient, error)
+	ArtifactClient(c *cobra.Command) (artifactservice.ArtifactServiceClient, error)
 }
 
 type clientFactory struct {
@@ -29,4 +31,18 @@ func (f *clientFactory) CommanderClient(c *cobra.Command) (commanderservice.Comm
 	}
 
 	return commander, nil
+}
+
+// ArtifactClient returns a ArtifactServiceClient
+func (f *clientFactory) ArtifactClient(c *cobra.Command) (artifactservice.ArtifactServiceClient, error) {
+	opts := artifactservice.Options{
+		ConnectionString: "memory://",
+	}
+
+	artifact, err := artifactservice.New(opts)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create Artifact client: %w", err)
+	}
+
+	return artifact, nil
 }

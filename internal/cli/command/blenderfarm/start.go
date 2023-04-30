@@ -1,4 +1,4 @@
-package blenderfarm
+package blenderfarmcommand
 
 import (
 	"github.com/flowshot-io/commander-client-go/commanderservice/v1"
