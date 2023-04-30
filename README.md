@@ -7,4 +7,4 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/flowshot-io/commander-cli)](https://goreportcard.com/report/github.com/flowshot-io/commander-cli)
 [![GitHub](https://img.shields.io/github/license/flowshot-io/commander-cli)](https://github.com/flowshot-io/commander-cli/blob/master/LICENSE)
 
-Command line interface for Commander. Manage assets directly from the command line.
+Command line interface for Commander. Manage workflows directly from the command line.
