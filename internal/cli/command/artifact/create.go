@@ -3,7 +3,7 @@ package artifactcommand
 import (
 	"fmt"
 
-	"github.com/flowshot-io/commander-cli/internal/artifact"
+	"github.com/flowshot-io/x/pkg/artifact"
 	"github.com/spf13/cobra"
 )
 
@@ -21,12 +21,11 @@ func NewCreateCommand(d *Driver) *cobra.Command {
 				return fmt.Errorf("cannot specify both tar.gz file and paths")
 			}
 
-			var a *artifact.Artifact
+			var a artifact.Artifact
 			var err error
 
 			if tarGzFile != "" {
-				a = artifact.New(artifactName)
-				err = a.LoadFromTarGzFile(tarGzFile)
+				a, err = artifact.NewFromTarGz(tarGzFile)
 				if err != nil {
 					return fmt.Errorf("error loading artifact from tar.gz file: %w", err)
 				}
@@ -42,7 +41,7 @@ func NewCreateCommand(d *Driver) *cobra.Command {
 				return fmt.Errorf("error listing files: %w", err)
 			}
 
-			fmt.Printf("Artifact '%s' created successfully with files: %v\n", a.Name, list)
+			fmt.Printf("Artifact '%s' created successfully with files: %v\n", a.GetName(), list)
 
 			client, err := d.clientFactory.ArtifactClient(cmd)
 			if err != nil {
@@ -54,7 +53,7 @@ func NewCreateCommand(d *Driver) *cobra.Command {
 				return fmt.Errorf("error uploading artifact: %w", err)
 			}
 
-			fmt.Printf("Artifact '%s' uploaded successfully\n", a.Name)
+			fmt.Printf("Artifact '%s' uploaded successfully\n", a.GetName())
 
 			return nil
 		},

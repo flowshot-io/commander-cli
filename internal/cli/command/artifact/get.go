@@ -33,12 +33,12 @@ func NewGetCommand(d *Driver) *cobra.Command {
 				return fmt.Errorf("error making destination path absolute: %w", err)
 			}
 
-			err = artifact.ExtractTo(extractionPath)
+			err = artifact.ExtractToDirectory(extractionPath)
 			if err != nil {
 				return fmt.Errorf("error extracting artifact file: %w", err)
 			}
 
-			fmt.Printf("Artifact '%s' extracted successfully to '%s'\n", artifact.Name, extractionPath)
+			fmt.Printf("Artifact '%s' extracted successfully to '%s'\n", artifact.GetName(), extractionPath)
 
 			return nil
 		},

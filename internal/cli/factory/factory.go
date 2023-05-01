@@ -3,9 +3,9 @@ package factory
 import (
 	"fmt"
 
-	"github.com/flowshot-io/commander-cli/internal/artifactservice"
 	"github.com/flowshot-io/commander-client-go/client"
 	"github.com/flowshot-io/commander-client-go/commanderservice/v1"
+	"github.com/flowshot-io/x/pkg/artifactservice"
 	"github.com/spf13/cobra"
 )
 
