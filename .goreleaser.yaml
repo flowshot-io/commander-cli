@@ -4,7 +4,7 @@ before:
   hooks:
     - make check
 builds:
-  - main: ./cmd/cli
+  - main: ./cmd/commander
     env:
       - CGO_ENABLED=0
     goos:
