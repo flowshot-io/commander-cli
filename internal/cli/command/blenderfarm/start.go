@@ -1,6 +1,8 @@
 package blenderfarmcommand
 
 import (
+	"fmt"
+
 	"github.com/flowshot-io/commander-client-go/commanderservice/v1"
 	"github.com/spf13/cobra"
 )
@@ -15,13 +17,12 @@ func NewStartCommand(d *Driver) *cobra.Command {
 		Use:   "start",
 		Short: "Start workflow",
 		Long:  `Start workflow`,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.Println("Starting workflow")
 
 			client, err := d.clientFactory.CommanderClient(cmd)
 			if err != nil {
-				cmd.Println("Unable to create commander client", err)
-				return
+				return fmt.Errorf("error creating commander client: %w", err)
 			}
 
 			resp, err := client.CreateBlenderFarmWorkflow(cmd.Context(), &commanderservice.CreateBlenderFarmWorkflowRequest{
@@ -31,11 +32,12 @@ func NewStartCommand(d *Driver) *cobra.Command {
 				BatchSize:  batchSize,
 			})
 			if err != nil {
-				cmd.Println("Unable to start workflow", err)
-				return
+				return fmt.Errorf("error starting workflow: %w", err)
 			}
 
 			cmd.Println("Workflow started", resp)
+
+			return nil
 		},
 	}
 
