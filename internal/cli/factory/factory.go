@@ -5,6 +5,7 @@ import (
 
 	"github.com/flowshot-io/commander-client-go/client"
 	"github.com/flowshot-io/commander-client-go/commanderservice/v1"
+	"github.com/flowshot-io/polystore/pkg/services"
 	"github.com/flowshot-io/x/pkg/artifactservice"
 	"github.com/spf13/cobra"
 )
@@ -35,15 +36,19 @@ func (f *clientFactory) CommanderClient(c *cobra.Command) (commanderservice.Comm
 
 // ArtifactClient returns a ArtifactServiceClient
 func (f *clientFactory) ArtifactClient(c *cobra.Command) (artifactservice.ArtifactServiceClient, error) {
-	opts := artifactservice.Options{
-		ConnectionString: "s3://commander/workflows/?credential=hmac:5kpWVH8bjA3ak8Kv:ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099&location=&force_path_style=true",
-		// ConnectionString: "minio://commander/workflows?credential=hmac:5kpWVH8bjA3ak8Kv:ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099",
+	connectionString := "s3://commander/workflows/?accessKey=5kpWVH8bjA3ak8Kv&secretKey=ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099"
+
+	store, err := services.NewStorageFromString(connectionString)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create Storage client: %w", err)
 	}
 
-	artifact, err := artifactservice.New(opts)
+	service, err := artifactservice.New(artifactservice.Options{
+		Store: store,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("unable to create Artifact client: %w", err)
 	}
 
-	return artifact, nil
+	return service, nil
 }

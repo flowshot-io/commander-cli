@@ -23,7 +23,7 @@ func NewRootCommand(d *Driver) *cobra.Command {
 	}
 
 	createCMD := NewCreateCommand(d)
-	getCMD := NewGetCommand(d)
+	getCMD := NewDownloadCommand(d)
 
 	c.AddCommand(
 		createCMD,

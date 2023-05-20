@@ -7,21 +7,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewGetCommand(d *Driver) *cobra.Command {
+func NewDownloadCommand(d *Driver) *cobra.Command {
 	var artifactName string
 	var destinationPath string
 
 	c := &cobra.Command{
-		Use:   "get",
-		Short: "get an artifact from storage",
-		Long:  `get an artifact from storage.`,
+		Use:   "download",
+		Short: "download an artifact from storage",
+		Long:  `download an artifact from storage.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := d.clientFactory.ArtifactClient(cmd)
 			if err != nil {
 				return fmt.Errorf("error creating artifact client: %w", err)
 			}
 
-			artifact, err := client.GetArtifact(cmd.Context(), artifactName)
+			artifact, err := client.DownloadArtifact(cmd.Context(), artifactName)
 			if err != nil {
 				return fmt.Errorf("error getting artifact: %w", err)
 			}
