@@ -32,11 +32,11 @@ dep:
 
 .PHONY: run
 run:
-	@go run ./cmd/cli
+	@go run ./cmd/commander
 
-.PHONY: build
-build:
-	@go build ./cmd/cli
+.PHONY: install
+install:
+	@go install ./cmd/commander
 
 .PHONY: gen-key
 gen-key:
