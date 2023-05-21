@@ -3,6 +3,9 @@ package factory
 import (
 	"fmt"
 
+	_ "github.com/flowshot-io/polystore/pkg/services/fs"
+	_ "github.com/flowshot-io/polystore/pkg/services/s3"
+
 	"github.com/flowshot-io/commander-client-go/client"
 	"github.com/flowshot-io/commander-client-go/commanderservice/v1"
 	"github.com/flowshot-io/polystore/pkg/services"
@@ -36,7 +39,7 @@ func (f *clientFactory) CommanderClient(c *cobra.Command) (commanderservice.Comm
 
 // ArtifactClient returns a ArtifactServiceClient
 func (f *clientFactory) ArtifactClient(c *cobra.Command) (artifactservice.ArtifactServiceClient, error) {
-	connectionString := "s3://commander/workflows/?accessKey=5kpWVH8bjA3ak8Kv&secretKey=ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099"
+	connectionString := "s3://commander/artifacts/?accessKey=5kpWVH8bjA3ak8Kv&secretKey=ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099&region=auto"
 
 	store, err := services.NewStorageFromString(connectionString)
 	if err != nil {
