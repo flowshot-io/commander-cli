@@ -1,4 +1,4 @@
-package wayfarer
+package temporal
 
 import (
 	"github.com/flowshot-io/x/pkg/logger"

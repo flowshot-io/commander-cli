@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/flowshot-io/commander-cli/internal/services/config"
 	"github.com/flowshot-io/x/pkg/logger"
 	"github.com/flowshot-io/x/pkg/manager"
 )
@@ -17,26 +16,12 @@ type (
 func (f applyFunc) apply(s *options) { f(s) }
 
 // WithServices indicates which supplied services (e.g. frontend, worker) within the server to start
-func WithServices(names []string) Option {
+func WithServices(names []manager.ServiceName) Option {
 	return applyFunc(func(s *options) {
 		s.serviceNames = make(map[manager.ServiceName]struct{})
 		for _, name := range names {
 			s.serviceNames[manager.ServiceName(name)] = struct{}{}
 		}
-	})
-}
-
-// WithConfig sets a custom configuration
-func WithConfig(cfg *config.Config) Option {
-	return applyFunc(func(s *options) {
-		s.config = cfg
-	})
-}
-
-// WithConfigLoader sets a custom configuration load
-func WithConfigLoader(configDir string) Option {
-	return applyFunc(func(s *options) {
-		s.configDir = configDir
 	})
 }
 
