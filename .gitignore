@@ -36,3 +36,6 @@ dist/
 /local/
 /temp/
 /storage/
+
+# Temporal
+temporal.db

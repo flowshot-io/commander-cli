@@ -11,7 +11,7 @@ import (
 
 const (
 	CommanderService manager.ServiceName = "commander"
-	TemporalService  manager.ServiceName = "temporalite"
+	TemporalService  manager.ServiceName = "temporal"
 	WayFarerService  manager.ServiceName = "wayfarer"
 )
 
@@ -36,17 +36,8 @@ func New(opts ...Option) (manager.Service, error) {
 		return nil, fmt.Errorf("unable to create service manager: %w", err)
 	}
 
-	if _, ok := so.serviceNames[CommanderService]; ok {
-		srv, err := commander.New(commander.Options{})
-		if err != nil {
-			return nil, fmt.Errorf("unable to create commander service: %w", err)
-		}
-
-		srvs.Add(CommanderService, srv)
-	}
-
 	if _, ok := so.serviceNames[TemporalService]; ok {
-		srv, err := temporal.New(temporal.Options{})
+		srv, err := temporal.New(temporal.Options{Logger: so.logger})
 		if err != nil {
 			return nil, fmt.Errorf("unable to create temporal service: %w", err)
 		}
@@ -55,12 +46,21 @@ func New(opts ...Option) (manager.Service, error) {
 	}
 
 	if _, ok := so.serviceNames[WayFarerService]; ok {
-		srv, err := wayfarer.New(wayfarer.Options{})
+		srv, err := wayfarer.New(wayfarer.Options{Logger: so.logger})
 		if err != nil {
 			return nil, fmt.Errorf("unable to create wayfarer service: %w", err)
 		}
 
 		srvs.Add(WayFarerService, srv)
+	}
+
+	if _, ok := so.serviceNames[CommanderService]; ok {
+		srv, err := commander.New(commander.Options{Logger: so.logger})
+		if err != nil {
+			return nil, fmt.Errorf("unable to create commander service: %w", err)
+		}
+
+		srvs.Add(CommanderService, srv)
 	}
 
 	return &Manager{services: srvs}, nil
