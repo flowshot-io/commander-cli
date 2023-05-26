@@ -1,4 +1,4 @@
-package servicescommand
+package servicecommand
 
 import (
 	"github.com/spf13/cobra"
@@ -13,9 +13,9 @@ func NewDriver() *Driver {
 
 func NewRootCommand(d *Driver) *cobra.Command {
 	c := &cobra.Command{
-		Use:   "services",
-		Short: "Services commands",
-		Long:  `Services commands`,
+		Use:   "service",
+		Short: "Service commands",
+		Long:  `Service commands`,
 	}
 
 	runCMD := NewRunCommand(d)

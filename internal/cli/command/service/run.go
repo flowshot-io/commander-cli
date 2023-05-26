@@ -1,4 +1,4 @@
-package servicescommand
+package servicecommand
 
 import (
 	"os"
