@@ -3,8 +3,9 @@ module github.com/flowshot-io/commander-cli
 go 1.19
 
 require (
+	github.com/flowshot-io/commander v0.0.0-20230526125443-cf3142047513
 	github.com/flowshot-io/commander-client-go v0.0.0-20230429232552-86c4ef21d20a
-	github.com/flowshot-io/polystore v0.0.0-20230519135222-8e879520a37d
+	github.com/flowshot-io/polystore v0.0.0-20230519144818-0fc19a23ee91
 	github.com/flowshot-io/x v0.0.0-20230525145942-2ef13ec50687
 	github.com/ivanpirog/coloredcobra v1.0.1
 	github.com/spf13/cobra v1.4.0
@@ -38,6 +39,9 @@ require (
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.13.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gocql/gocql v1.3.0 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
@@ -68,6 +72,7 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/labstack/echo/v4 v4.9.1 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
+	github.com/leodido/go-urn v1.2.3 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -148,6 +153,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/validator.v2 v2.0.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	logur.dev/adapter/zerolog v0.6.0 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
@@ -160,4 +166,5 @@ require (
 	modernc.org/sqlite v1.20.0 // indirect
 	modernc.org/strutil v1.1.3 // indirect
 	modernc.org/token v1.1.0 // indirect
+	sigs.k8s.io/yaml v1.3.0 // indirect
 )

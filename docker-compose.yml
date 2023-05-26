@@ -1,0 +1,21 @@
+version: "3.5"
+services:
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9099:9099"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    networks:
+      - commanderlite-network
+    volumes:
+      - ./storage/minio:/data
+    command: server --address ":9099" --console-address ":9000" /data
+  
+networks:
+  commanderlite-network:
+    driver: bridge
+    name: commanderlite-network

@@ -3,6 +3,7 @@ package factory
 import (
 	"fmt"
 
+	"github.com/flowshot-io/commander-cli/internal/static"
 	_ "github.com/flowshot-io/polystore/pkg/services/fs"
 	_ "github.com/flowshot-io/polystore/pkg/services/s3"
 
@@ -27,7 +28,7 @@ func NewClientFactory() ClientFactory {
 
 // CommanderClient returns a CommanderServiceClient
 func (f *clientFactory) CommanderClient(c *cobra.Command) (commanderservice.CommanderServiceClient, error) {
-	nopts := client.Options{Host: "localhost:50051"}
+	nopts := client.Options{Host: static.TemporalFrontEndHost}
 
 	commander, err := client.Dial(nopts)
 	if err != nil {
@@ -39,9 +40,7 @@ func (f *clientFactory) CommanderClient(c *cobra.Command) (commanderservice.Comm
 
 // ArtifactClient returns a ArtifactServiceClient
 func (f *clientFactory) ArtifactClient(c *cobra.Command) (artifactservice.ArtifactServiceClient, error) {
-	connectionString := "s3://commander/artifacts/?accessKey=5kpWVH8bjA3ak8Kv&secretKey=ipvdKs21pyp3aFmKwNbU9iAJJTkH3c9Q&endpoint=http://localhost:9099&region=auto"
-
-	store, err := services.NewStorageFromString(connectionString)
+	store, err := services.NewStorageFromString(static.StorageConnection)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create Storage client: %w", err)
 	}
